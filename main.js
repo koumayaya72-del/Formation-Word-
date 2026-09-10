@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const contactModal = document.getElementById('contactModal');
   const contactOrgBtn = document.getElementById('contactOrgBtn');
   const closeContactBtn = document.getElementById('closeContactBtn');
-  
+
   if (contactOrgBtn && contactModal) {
     contactOrgBtn.addEventListener('click', () => contactModal.classList.remove('hidden'));
   }
@@ -73,11 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
       'DESCRIPTION:Formation gratuite pour élèves, étudiants et professionnels par Tall Seydou. Début chaque soir à 20h00 GMT en ligne.',
       'LOCATION:En ligne — Webinaire',
       'END:VEVENT', 'END:VCALENDAR'
-    ].join('\r\n');
-    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8;' });
+    ].join('\\r\\n');
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'formation-word-aeemci-koumassi.ics';
+    const a = document.createElement('a'); a.href = url; a.download = 'formation-word-aeemci-koumassi.ics';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
@@ -97,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (form) {
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
-      
+
       const nom = document.getElementById('f-nom').value.trim();
       const email = document.getElementById('f-email').value.trim();
       const whatsapp = document.getElementById('f-whatsapp').value.trim();
@@ -111,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.querySelector('.field-error[data-for="f-email"]').classList.remove('hidden'); valid = false; }
       else { document.querySelector('.field-error[data-for="f-email"]').classList.add('hidden'); }
 
-      if (whatsapp.replace(/\D/g, '').length < 8) { document.querySelector('.field-error[data-for="f-whatsapp"]').classList.remove('hidden'); valid = false; }
+      if (whatsapp.replace(/\\D/g, '').length < 8) { document.querySelector('.field-error[data-for="f-whatsapp"]').classList.remove('hidden'); valid = false; }
       else { document.querySelector('.field-error[data-for="f-whatsapp"]').classList.add('hidden'); }
 
       if (!statut) { document.querySelector('.field-error[data-for="f-statut"]').classList.remove('hidden'); valid = false; }
@@ -127,13 +126,13 @@ document.addEventListener('DOMContentLoaded', () => {
         date: new Date().toISOString()
       };
 
-      // Appel de la fonction de base de données (Supabase / Local)
+      // Appel de la fonction de base de données (Google Sheets / Local)
       if (typeof ajouterInscription === 'function') {
         const success = await ajouterInscription(entry);
         if (!success) {
           alert("Erreur lors de l'enregistrement. Veuillez vérifier votre connexion internet et réessayer.");
           submitBtn.disabled = false;
-          submitLabel.innerHTML = 'Valider & Rejoindre le Groupe WhatsApp';
+          submitLabel.innerHTML = '<i class="fa-brands fa-whatsapp text-xl"></i> Valider & Rejoindre le Groupe WhatsApp';
           return;
         }
       }
@@ -281,8 +280,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (cachedList.length === 0) return;
       const headers = ['Nom & Prénoms', 'Email', 'WhatsApp', 'Statut', 'Niveau', 'Date'];
       const rows = cachedList.map(e => [e.nom, e.email, e.whatsapp, e.statut, e.niveau, e.date]);
-      const csv = [headers, ...rows].map(row => row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(';')).join('\n');
-      const blob = new Blob(['\uFEFF' + csv], { type: 'text/charset=utf-8;' });
+      const csv = [headers, ...rows].map(row => row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(';')).join('\\n');
+      const blob = new Blob(['\\uFEFF' + csv], { type: 'text/charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a'); a.href = url; a.download = `inscriptions_formation_word_aeemci_${new Date().toISOString().slice(0,10)}.csv`;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
